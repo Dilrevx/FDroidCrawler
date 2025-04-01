@@ -93,5 +93,17 @@ class RepoIndexSpider(scrapy.Spider):
 
     def parse(self, response: http.XmlResponse):
         xml_file = ASSET_ROOT / "index.xml"
+        repo_file = ASSET_ROOT / "repo.json"
+        application_file = ASSET_ROOT / "applications.json"
+
         xml_file.write_text(response.text, encoding="utf-8")
-        yield from parse_fdroid_xml(response.text)["applications"]
+
+        dict_ = parse_fdroid_xml(response.text)
+        repo_data = dict_["repository"]
+        app_data = dict_["applications"]
+
+        repo_file.write_text(
+            json.dumps(repo_data, indent=4, ensure_ascii=False), encoding="utf-8"
+        )
+
+        yield from app_data
