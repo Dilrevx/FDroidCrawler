@@ -54,7 +54,6 @@ def parse_fdroid_xml(xml_content: str):
             "marketvercode": app.findtext("marketvercode"),
             "antifeatures": app.findtext("antifeatures"),
         }
-        applications.append(app_data)
         packages = []
 
         # 解析所有包版本
@@ -72,6 +71,9 @@ def parse_fdroid_xml(xml_content: str):
                 "added_date": pkg.findtext("added"),
             }
             packages.append(pkg_data)
+
+        app_data["packages"] = packages
+        applications.append(app_data)
     return {
         "repository": repo_data,
         "applications": applications,
@@ -79,14 +81,6 @@ def parse_fdroid_xml(xml_content: str):
 
 
 from xml.etree.ElementTree import iterparse
-
-
-def stream_parse(xml_file):
-    context = iterparse(xml_file, events=("start", "end"))
-    for event, elem in context:
-        if event == "end" and elem.tag == "application":
-            # 处理应用节点
-            elem.clear()
 
 
 from scrapy import http
